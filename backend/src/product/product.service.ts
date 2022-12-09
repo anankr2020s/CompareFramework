@@ -4,6 +4,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
+import { Response } from 'express';
 
 @Injectable()
 export class ProductService {
@@ -23,10 +24,7 @@ export class ProductService {
     try {
       return await this.pdRepo.findOneByOrFail({ id });
     } catch (error) {
-      throw new HttpException(
-        { cause: 'product not found' },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('product not found', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -41,7 +39,7 @@ export class ProductService {
       if (picture) product.picture = picture;
       return await this.pdRepo.save(product);
     } catch (error) {
-      throw new HttpException({ cause: error }, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -50,7 +48,7 @@ export class ProductService {
       const product = await this.findOne(id);
       return await this.pdRepo.delete(id);
     } catch (error) {
-      throw new HttpException({ cause: error }, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
     }
   }
 }
